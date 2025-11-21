@@ -113,6 +113,8 @@ jobs:
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
         uses: softprops/action-gh-release@v2
         with:
-          files: release_artifacts/*/*
+          files: |
+            release_artifacts/*/*.tar.gz
+            release_artifacts/*/*.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
