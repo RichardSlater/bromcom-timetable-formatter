@@ -64,8 +64,8 @@ jobs:
           $BIN = "target/release/${{ matrix.bin_name }}"
           if (-not (Test-Path $BIN)) { Write-Host "Binary not found: $BIN"; Get-ChildItem target/release -Force; exit 1 }
           Copy-Item $BIN -Destination release -Force
-          Copy-Item README.md -Destination release -Force
-          Copy-Item LICENSE -Destination release -Force
+          Copy-Item README.md -Destination release -Force -ErrorAction SilentlyContinue
+          Copy-Item LICENSE -Destination release -Force -ErrorAction SilentlyContinue
           Set-Location release
           $ART_NAME = "timetable-cli-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}"
           Compress-Archive -Path * -DestinationPath $ART_NAME
