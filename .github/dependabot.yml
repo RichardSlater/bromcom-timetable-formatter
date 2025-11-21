@@ -1,0 +1,11 @@
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    # Optionally ignore some dependencies
+    # ignore:
+    #   - dependency-name: "some-crate"
+    #     versions: ["< 1.0.0"]

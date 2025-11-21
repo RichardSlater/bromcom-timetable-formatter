@@ -1,0 +1,113 @@
+[[mappings]]
+prefix = "MA"
+bg_color = "#fcdcd8"
+fg_color = "#f0503f"
+map_id = "Maths_Rooms"
+label = "Maths"
+
+[[mappings]]
+prefix = "EN"
+bg_color = "#daeaf6"
+fg_color = "#4799d4"
+map_id = "English_Rooms"
+label = "English"
+
+[[mappings]]
+prefix = "SC"
+bg_color = "#fad7e6"
+fg_color = "#e93982"
+map_id = "Science_Rooms"
+label = "Science"
+
+[[mappings]]
+prefix = "HU"
+bg_color = "#faeed2"
+fg_color = "#e8c570"
+map_id = "Humanities_Rooms"
+label = "Humanities"
+
+[[mappings]]
+prefix = "IT"
+bg_color = "#bfbecc"
+fg_color = "#151640"
+map_id = "IT_Rooms"
+label = "IT"
+
+[[mappings]]
+prefix = "LA"
+bg_color = "#edf4e5"
+fg_color = "#b8d666"
+map_id = "Languages_Rooms"
+label = "Languages"
+
+[[mappings]]
+prefix = "MU"
+bg_color = "#b9a9bb"
+fg_color = "#8d3d97"
+map_id = "Music_x2C_Art_x2C_DT_x26_FT_Rooms"
+label = "Music"
+
+[[mappings]]
+prefix = "AR"
+bg_color = "#b9a9bb"
+fg_color = "#8d3d97"
+map_id = "Music_x2C_Art_x2C_DT_x26_FT_Rooms"
+label = "Art"
+
+[[mappings]]
+prefix = "DT"
+bg_color = "#b9a9bb"
+fg_color = "#8d3d97"
+map_id = "Music_x2C_Art_x2C_DT_x26_FT_Rooms"
+label = "DT"
+
+[[mappings]]
+prefix = "FT"
+bg_color = "#b9a9bb"
+fg_color = "#8d3d97"
+map_id = "Music_x2C_Art_x2C_DT_x26_FT_Rooms"
+label = "Food Tech"
+
+# Week 1 overrides
+[[overrides]]
+week = 1
+day = "Thursday"
+period = "L1"
+room = "SC6"
+class_code = "SC6"
+
+[[overrides]]
+week = 1
+day = "Friday"
+period = "L1"
+room = "SC2"
+class_code = "SC2"
+
+[[overrides]]
+week = 1
+day = "Monday"
+period = "L2"
+room = "SC3"
+class_code = "SC3"
+
+# Week 2 overrides
+[[overrides]]
+week = 2
+day = "Monday"
+period = "L2"
+room = "SC8"
+class_code = "SC8"
+
+[[overrides]]
+week = 2
+day = "Wednesday"
+period = "L3"
+room = "HU3"
+class_code = "HU3"
+
+[[overrides]]
+week = 2
+day = "Wednesday"
+period = "L5"
+room = "SC8"
+class_code = "SC8"

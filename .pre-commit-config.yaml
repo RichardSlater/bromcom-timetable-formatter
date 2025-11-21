@@ -1,0 +1,29 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: end-of-file-fixer
+      - id: trailing-whitespace
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # Use system hooks for Rust commands (cargo fmt, clippy). These run locally and
+  # require Rust toolchain installed in the developer environment.
+  - repo: local
+    hooks:
+      - id: cargo-fmt
+        name: cargo fmt (check)
+        entry: cargo fmt --all -- --check
+        language: system
+        types: [rust]
+        stages: [commit]
+      - id: cargo-clippy
+        name: cargo clippy (warnings as errors)
+        entry: cargo clippy --all-targets --all-features -- -D warnings
+        language: system
+        stages: [commit]
+      - id: cargo-test
+        name: cargo test (pre-push)
+        entry: bash -lc 'cargo test --workspace --quiet'
+        language: system
+        stages: [push]

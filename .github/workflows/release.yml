@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+jobs:
+  build:
+    name: Build artifacts (${ { matrix.name }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        include:
+          - os: ubuntu-latest
+            name: linux-x86_64
+            archive_ext: tar.gz
+            bin_name: timetable_cli
+          - os: macos-latest
+            name: macos-x86_64
+            archive_ext: tar.gz
+            bin_name: timetable_cli
+          - os: windows-latest
+            name: windows-x86_64
+            archive_ext: zip
+            bin_name: timetable_cli.exe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          override: true
+
+      - name: Build (release)
+        run: cargo build --workspace --release
+
+      - name: Package artifact
+        run: |
+          mkdir -p release
+          BIN=target/release/${{ matrix.bin_name }}
+          if [ ! -f "$BIN" ]; then echo "Binary not found: $BIN"; ls -la target/release || true; exit 1; fi
+          cp "$BIN" release/ || true
+          cp README.md release/ || true
+          cp LICENSE release/ || true
+          cd release
+          ART_NAME="timetable-cli-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}"
+          if [[ "${{ matrix.archive_ext }}" == "zip" ]]; then
+            powershell -Command "Compress-Archive -Path * -DestinationPath $ART_NAME"
+          else
+            tar -czf "$ART_NAME" *
+          fi
+          ls -la
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.name }}
+          path: release/
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download all build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: release_artifacts
+
+      - name: Show artifacts
+        run: ls -la release_artifacts || true
+
+      - name: Create GitHub release and upload artifacts
+        id: create_release
+        # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
+        uses: softprops/action-gh-release@v2
+        with:
+          files: release_artifacts/*/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
