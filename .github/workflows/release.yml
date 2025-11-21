@@ -47,7 +47,7 @@ jobs:
         run: |
           mkdir -p release
           BIN="target/release/${{ matrix.bin_name }}"
-          if [ ! -f "$BIN" ]; then echo "Binary not found: $BIN"; ls -la target/release || true; exit 1; fi
+          if [ ! -f "$BIN" ]; then echo "Binary not found: $BIN"; ls -la target/release; exit 1; fi
           cp "$BIN" release/ || true
           cp README.md release/
           cp LICENSE release/
