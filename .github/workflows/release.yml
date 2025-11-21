@@ -76,9 +76,9 @@ jobs:
 
       - name: Install Cross
         if: matrix.use_cross
-        run: |
-          curl -L --proto '=https' --tlsv1.2 -sSf https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
-          cargo binstall cross -y
+        uses: cargo-bins/cargo-binstall-action@v1
+        with:
+          crate: cross
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
