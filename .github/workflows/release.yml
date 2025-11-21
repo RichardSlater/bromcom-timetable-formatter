@@ -49,8 +49,8 @@ jobs:
           BIN="target/release/${{ matrix.bin_name }}"
           if [ ! -f "$BIN" ]; then echo "Binary not found: $BIN"; ls -la target/release || true; exit 1; fi
           cp "$BIN" release/ || true
-          cp README.md release/ || true
-          cp LICENSE release/ || true
+          cp README.md release/
+          cp LICENSE release/
           cd release
           ART_NAME="timetable-cli-${{ github.ref_name }}-${{ matrix.name }}.${{ matrix.archive_ext }}"
           tar -czf "$ART_NAME" *
