@@ -512,15 +512,47 @@ def main():
         print(f"Error: {e}")
         sys.exit(1)
 
+    # Verify input file exists and is readable
     if not input_path.exists():
         print(f"Error: Input file not found: {input_path}")
         sys.exit(1)
 
-    # Create output directory if it doesn't exist
-    output_path.parent.mkdir(parents=True, exist_ok=True)
+    if not input_path.is_file():
+        print(f"Error: Input path is not a file: {input_path}")
+        sys.exit(1)
 
     try:
+        with open(input_path, 'rb') as f:
+            pass  # Just verify we can open it
+    except PermissionError:
+        print(f"Error: Permission denied reading input file: {input_path}")
+        sys.exit(1)
+    except OSError as e:
+        print(f"Error: Cannot access input file: {input_path} ({e})")
+        sys.exit(1)
+
+    # Create output directory if it doesn't exist
+    try:
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+    except PermissionError:
+        print(f"Error: Permission denied creating output directory: {output_path.parent}")
+        sys.exit(1)
+    except OSError as e:
+        print(f"Error: Cannot create output directory: {output_path.parent} ({e})")
+        sys.exit(1)
+
+    # Perform the anonymization with detailed error handling
+    try:
         anonymize_pdf(input_path, output_path)
+    except PermissionError:
+        print(f"Error: Permission denied writing output file: {output_path}")
+        sys.exit(1)
+    except OSError as e:
+        if e.errno == 28:  # ENOSPC - No space left on device
+            print(f"Error: Disk full - cannot write output file: {output_path}")
+        else:
+            print(f"Error: File system error: {e}")
+        sys.exit(1)
     except Exception as e:
         print(f"Error during anonymization: {e}")
         import traceback
