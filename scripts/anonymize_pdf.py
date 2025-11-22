@@ -45,15 +45,6 @@ LAST_NAMES = [
     "Entry", "Item", "Object", "Element", "Unit"
 ]
 
-FIRST_NAMES = [
-    "Test", "Sample", "Demo", "Mock", "Fixture", "Example", "Placeholder",
-    "Specimen", "Model", "Instance", "Case", "Trial"
-]
-
-LAST_NAMES = [
-    "Data", "User", "Person", "Student", "Subject", "Entity", "Record",
-    "Entry", "Item", "Object", "Element", "Unit"
-]
 
 
 def generate_replacement_name(original: str, used_names: Set[str], counter: Dict[str, int]) -> str:
