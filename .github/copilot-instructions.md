@@ -8,6 +8,10 @@ This is a Rust workspace project that parses Bromcom PDF timetables and generate
 
 GPG Signing is an absolute requirement, under not circumstances are you to disable code signing even if the signing fails, simply provide the command for the user to commit the files with GPG signing enabled.
 
+## Conventional Commits
+
+All commits must follow the [Conventional Commits](https://www.conventionalcommits.org/) specification (e.g., `feat: add map overlay`, `fix: correct renderer panic`). Ensure every commit message includes the proper type, optional scope, and succinct description so automated tooling can parse changelogs accurately.
+
 ## Architecture
 
 ### Workspace Structure
@@ -95,7 +99,7 @@ period = "L1"
 
 ### Layout Structure (Target Output)
 
-- **Header**: Student name and form (e.g., "Richard Slater (11RD)"), Week identifier
+- **Header**: Student name and form (e.g., "Alex Testington (11XX)"), Week identifier
 - **Grid**: 5 columns (Mon-Fri) × 6 rows (PD + L1-L5)
 - **Breaks**:
   - Break row after L2 (11:00-11:30)
@@ -290,6 +294,12 @@ cargo fmt --check
 - Preserve original SVG structure
 - Test with various SVG editors (Inkscape, Adobe Illustrator)
 - Handle missing map IDs gracefully (log warning, don't crash)
+
+### For Running Python
+
+- Use the PyLance MCP server
+- Use a virtual environment for dependencies
+- Ensure compatibility with Python 3.12+
 
 ## Dependencies to Respect
 
