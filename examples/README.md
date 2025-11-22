@@ -69,7 +69,7 @@ These demonstrate the final formatted timetable with:
 
 Bromcom exports timetables as PDFs with the following characteristics:
 
-1. **Coordinate-Based Text**:  every text element has an `(x, y)` position
+1. **Coordinate-Based Text**: every text element has an `(x, y)` position
 2. **No Table Structure**: PDFs don't preserve HTML/table semantics
 3. **Week Markers**: Text like "Week 1", "Week 2" separates different weeks
 4. **Day Headers**: "Monday", "Tuesday", "Wednesday", "Thursday", "Friday"

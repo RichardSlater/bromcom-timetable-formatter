@@ -71,7 +71,7 @@ cargo build --release
 
 ### Option 3: Install via Cargo
 
-Once published to crates.io (planned):
+Once published to crates.io (package metadata added, publication pending):
 
 ```bash
 cargo install timetable_cli

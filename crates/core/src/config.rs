@@ -195,9 +195,9 @@ impl Config {
 
     /// Find the mapping for a given room code.
     ///
-    /// Returns the mapping with the longest matching prefix, allowing
-    /// specific overrides (e.g., "MA" matches "MA3" but "MA1" would match
-    /// a more specific "MA1" prefix if configured).
+    /// Returns the mapping with the longest matching prefix. If both 'MA' and 'MA1'
+    /// are configured, room 'MA10' matches 'MA1' (3 chars) over 'MA' (2 chars),
+    /// regardless of configuration order.
     ///
     /// # Arguments
     ///

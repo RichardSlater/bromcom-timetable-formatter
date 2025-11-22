@@ -33,7 +33,7 @@ pub struct Lesson {
     pub teacher: String,
     /// Class code (e.g., "MA3", "HU9")
     pub class_code: String,
-    /// Day of week (0 = Monday, 4 = Friday)
+    /// Day of week (0-4 for Monday-Friday; weekends not included)
     pub day_index: usize,
     /// Period index (0 = PD, 1 = L1, 2 = L2, etc.)
     pub period_index: usize,
