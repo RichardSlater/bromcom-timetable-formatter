@@ -79,6 +79,7 @@ To update the brochure site:
 3. Update any SVG/PNG assets in `docs/assets/` if screenshots or graphics change
 4. Commit and push to `main`
 5. GitHub Actions will automatically rebuild and deploy
+6. The landing page ships with a dark-mode toggle that relies on shared CSS variables—reuse the existing custom properties so new sections inherit both light and dark palettes automatically.
 
 ## Updating API Documentation
 

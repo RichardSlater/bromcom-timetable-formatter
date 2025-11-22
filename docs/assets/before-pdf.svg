@@ -1,20 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="360" height="240">
+<svg id="Layer_1" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 360 240">
+  <!-- Generator: Adobe Illustrator 29.8.3, SVG Export Plug-In . SVG Version: 2.1.1 Build 3)  -->
   <defs>
-    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#f5f7fb" />
-      <stop offset="100%" stop-color="#e4e9f3" />
+    <style>
+      .st0, .st1 {
+        font-family: Arial,Bold, Arial,Bold;
+      }
+
+      .st0, .st2 {
+        font-size: 17.94px;
+      }
+
+      .st1 {
+        font-size: 18.99px;
+      }
+
+      .st2 {
+        font-family: Arial, Arial;
+      }
+
+      .st3 {
+        fill: #fff;
+        stroke: #d1d7e6;
+        stroke-width: 2px;
+      }
+
+      .st4 {
+        fill: url(#linear-gradient);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="-330.08" y1="631.37" x2="-329.08" y2="630.37" gradientTransform="translate(118829 151529) scale(360 -240)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f5f7fb"/>
+      <stop offset="1" stop-color="#e4e9f3"/>
     </linearGradient>
   </defs>
-  <rect width="360" height="240" rx="12" fill="url(#bg)" />
-  <rect x="60" y="30" width="240" height="180" rx="8" fill="#fff" stroke="#d1d7e6" stroke-width="2" />
-  <rect x="60" y="60" width="240" height="30" fill="#f7f9fc" />
-  <text x="80" y="80" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#1f2937">Week 1 – Bromcom PDF</text>
-  <g fill="#4b5563" font-family="'Fira Code', 'Segoe UI', sans-serif" font-size="12">
-    <text x="80" y="110">MO 08:45 – Personal Dev. Intervention – HU1 – Ms Test A</text>
-    <text x="80" y="132">MO 10:15 – Geography – HU2 – Mr Test B</text>
-    <text x="80" y="154">TU 09:15 – Science – SC4 – Mr Proton</text>
-    <text x="80" y="176">WE 11:45 – French – LA2 – Ms Azure</text>
-  </g>
-  <text x="180" y="210" font-family="'Segoe UI', sans-serif" font-size="16" font-weight="600" fill="#9ca3af" text-anchor="middle">Raw PDF Export</text>
+  <rect class="st4" width="360" height="240" rx="12" ry="12"/>
+  <rect class="st3" x="60" y="30" width="240" height="180" rx="8" ry="8"/>
+  <text class="st1" transform="translate(168.3 73.81)"><tspan x="0" y="0">Monday</tspan></text>
+  <rect x="116.48" y="51.27" width="1.06" height="32"/>
+  <rect x="290.87" y="51.27" width="1.06" height="32"/>
+  <rect x="116.48" y="51.27" width="175.45" height="1.06"/>
+  <rect x="290.87" y="51.27" width="1.06" height="32"/>
+  <text class="st0" transform="translate(72.85 99.51)"><tspan x="0" y="0">PDI</tspan></text>
+  <rect x="68.08" y="82.74" width="1.06" height="105.99"/>
+  <rect x="68.08" y="82.74" width="48.93" height="1.06"/>
+  <text class="st2" transform="translate(121.25 101.29)"><tspan x="0" y="0">Personal </tspan></text>
+  <text class="st2" transform="translate(121.25 121.92)"><tspan x="0" y="0">Development </tspan></text>
+  <text class="st2" transform="translate(121.25 142.54)"><tspan x="0" y="0">Intervention</tspan></text>
+  <text class="st2" transform="translate(125.02 163.17)"><tspan x="0" y="0">MA12</tspan></text>
+  <text class="st2" transform="translate(125.02 183.81)"><tspan x="0" y="0">Mrs A Beta</tspan></text>
+  <rect x="116.48" y="82.21" width="1.06" height="106.52"/>
+  <rect x="290.87" y="82.21" width="1.06" height="106.52"/>
+  <rect x="116.48" y="82.21" width="175.45" height="2.11"/>
+  <rect x="290.87" y="82.21" width="1.06" height="106.52"/>
 </svg>
