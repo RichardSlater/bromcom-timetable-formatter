@@ -60,12 +60,14 @@ jobs:
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
+            install_target: true
           - os: ubuntu-latest
             name: freebsd-arm64
             target: aarch64-unknown-freebsd
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
+            install_target: true
 
     steps:
       - name: Checkout
@@ -88,7 +90,7 @@ jobs:
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.use_cross == false && matrix.target || '' }}
+          targets: ${{ matrix.install_target && matrix.target || (matrix.use_cross == false && matrix.target || '') }}
 
       - name: Build (release)
         shell: bash
