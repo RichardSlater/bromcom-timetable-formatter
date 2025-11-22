@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.5.0
+    rev: v6.0.0
     hooks:
       - id: end-of-file-fixer
       - id: trailing-whitespace
@@ -16,14 +16,14 @@ repos:
         entry: cargo fmt --all -- --check
         language: system
         types: [rust]
-        stages: [commit]
+        stages: [pre-commit]
       - id: cargo-clippy
         name: cargo clippy (warnings as errors)
         entry: cargo clippy --all-targets --all-features -- -D warnings
         language: system
-        stages: [commit]
+        stages: [pre-commit]
       - id: cargo-test
         name: cargo test (pre-push)
         entry: bash -lc 'cargo test --workspace --quiet'
         language: system
-        stages: [push]
+        stages: [pre-push]
