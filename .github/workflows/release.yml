@@ -61,13 +61,6 @@ jobs:
             bin_name: timetable_cli
             use_cross: true
             install_target: true
-          - os: ubuntu-latest
-            name: freebsd-arm64
-            target: aarch64-unknown-freebsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-            install_target: true
 
     steps:
       - name: Checkout
