@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="360" height="240">
+  <defs>
+    <linearGradient id="afterBg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#eef8ff" />
+      <stop offset="100%" stop-color="#e0f2ff" />
+    </linearGradient>
+    <style>
+      .label { font-family: 'Segoe UI', sans-serif; font-size: 10px; fill: #1f2937; }
+      .room { font-weight: 600; font-size: 12px; }
+      .subject { font-weight: 500; font-size: 11px; }
+    </style>
+  </defs>
+  <rect width="360" height="240" rx="12" fill="url(#afterBg)" />
+  <rect x="40" y="40" width="280" height="160" rx="10" fill="#ffffff" stroke="#c7e5ff" stroke-width="2" />
+  <text x="180" y="65" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#2563eb">Formatted SVG Timetable</text>
+  <g transform="translate(60,80)">
+    <rect width="50" height="110" fill="#fef3c7" stroke="#f59e0b" rx="6" />
+    <text x="25" y="20" class="label subject" text-anchor="middle">PD</text>
+    <text x="25" y="45" class="label room" text-anchor="middle">HU1</text>
+    <text x="25" y="72" class="label">Ms Test A</text>
+  </g>
+  <g transform="translate(120,80)">
+    <rect width="50" height="110" fill="#fee2e2" stroke="#f87171" rx="6" />
+    <text x="25" y="20" class="label subject" text-anchor="middle">L1</text>
+    <text x="25" y="45" class="label room" text-anchor="middle">HU2</text>
+    <text x="25" y="72" class="label">Mr Test B</text>
+  </g>
+  <g transform="translate(180,80)">
+    <rect width="50" height="110" fill="#e0f2fe" stroke="#38bdf8" rx="6" />
+    <text x="25" y="20" class="label subject" text-anchor="middle">L2</text>
+    <text x="25" y="45" class="label room" text-anchor="middle">SC4</text>
+    <text x="25" y="72" class="label">Mr Proton</text>
+  </g>
+  <g transform="translate(240,80)">
+    <rect width="50" height="110" fill="#ede9fe" stroke="#8b5cf6" rx="6" />
+    <text x="25" y="20" class="label subject" text-anchor="middle">L3</text>
+    <text x="25" y="45" class="label room" text-anchor="middle">LA2</text>
+    <text x="25" y="72" class="label">Ms Azure</text>
+  </g>
+  <text x="180" y="215" text-anchor="middle" font-family="'Segoe UI', sans-serif" font-size="16" font-weight="600" fill="#2563eb">Color-coded + Map-ready Output</text>
+</svg>

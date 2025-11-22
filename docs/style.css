@@ -180,14 +180,24 @@ section h2 {
     text-align: center;
 }
 
-.demo-placeholder {
+.demo-card {
     background: var(--bg-white);
-    border: 2px dashed var(--border-color);
     border-radius: 0.75rem;
-    padding: 4rem 2rem;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+}
+
+.demo-image {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.demo-caption {
     text-align: center;
+    font-size: 0.95rem;
     color: var(--text-secondary);
-    font-size: 1.125rem;
+    margin-top: 0.75rem;
 }
 
 .demo-arrow {

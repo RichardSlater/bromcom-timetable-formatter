@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 240" width="360" height="240">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f5f7fb" />
+      <stop offset="100%" stop-color="#e4e9f3" />
+    </linearGradient>
+  </defs>
+  <rect width="360" height="240" rx="12" fill="url(#bg)" />
+  <rect x="60" y="30" width="240" height="180" rx="8" fill="#fff" stroke="#d1d7e6" stroke-width="2" />
+  <rect x="60" y="60" width="240" height="30" fill="#f7f9fc" />
+  <text x="80" y="80" font-family="'Segoe UI', sans-serif" font-size="18" font-weight="600" fill="#1f2937">Week 1 – Bromcom PDF</text>
+  <g fill="#4b5563" font-family="'Fira Code', 'Segoe UI', sans-serif" font-size="12">
+    <text x="80" y="110">MO 08:45 – Personal Dev. Intervention – HU1 – Ms Test A</text>
+    <text x="80" y="132">MO 10:15 – Geography – HU2 – Mr Test B</text>
+    <text x="80" y="154">TU 09:15 – Science – SC4 – Mr Proton</text>
+    <text x="80" y="176">WE 11:45 – French – LA2 – Ms Azure</text>
+  </g>
+  <text x="180" y="210" font-family="'Segoe UI', sans-serif" font-size="16" font-weight="600" fill="#9ca3af" text-anchor="middle">Raw PDF Export</text>
+</svg>
