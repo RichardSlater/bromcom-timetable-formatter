@@ -321,6 +321,8 @@ Key architectural concepts:
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development workflow, testing, and PR guidelines.
 
+For a deeper look at unit vs integration tests, fixtures, and coverage goals, see [docs/testing.md](docs/testing.md).
+
 Quick commands:
 
 ```bash
