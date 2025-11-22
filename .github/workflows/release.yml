@@ -120,7 +120,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install dependencies (Linux RISC-V)
         if: matrix.target == 'riscv64gc-unknown-linux-gnu'
@@ -130,7 +130,7 @@ jobs:
 
       - name: Install Cross
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@v1.10.0
+        uses: cargo-bins/cargo-binstall@v1.16.1
         with:
           crate: cross
 
@@ -178,7 +178,7 @@ jobs:
           Get-ChildItem -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v5
         with:
           name: ${{ matrix.name }}
           path: release/
@@ -189,10 +189,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           path: release_artifacts
 
@@ -202,7 +202,7 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v2.4.2
         with:
           files: |
             release_artifacts/*/*.tar.gz
