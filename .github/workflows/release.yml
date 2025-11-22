@@ -3,7 +3,7 @@ name: Release
 on:
   push:
     tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+      - 'v[0-9]+.[0-9]+.[0-9]+'
 
 permissions:
   contents: write
@@ -63,64 +63,10 @@ jobs:
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
-          - os: macos-latest
-            name: macos-arm64
-            target: aarch64-apple-darwin
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: false
-          - os: ubuntu-latest
-            name: freebsd-riscv64
-            target: riscv64gc-unknown-freebsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-musl-x86_64
-            target: x86_64-unknown-linux-musl
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-musl-arm64
-            target: aarch64-unknown-linux-musl
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-armv7
-            target: armv7-unknown-linux-gnueabihf
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: netbsd-x86_64
-            target: x86_64-unknown-netbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: netbsd-arm64
-            target: aarch64-unknown-netbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: openbsd-x86_64
-            target: x86_64-unknown-openbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: openbsd-arm64
-            target: aarch64-unknown-openbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Install dependencies (Linux RISC-V)
         if: matrix.target == 'riscv64gc-unknown-linux-gnu'
@@ -128,18 +74,16 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-riscv64-linux-gnu
 
-      - name: Install cargo-binstall
+      - name: Install Cross
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@v1.16.1
-
-      - name: Install cross
-        if: matrix.use_cross
-        run: cargo binstall --no-confirm cross
+        uses: cargo-bins/cargo-binstall-action@v1
+        with:
+          crate: cross
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.use_cross == false && matrix.target || '' }}
+          targets: ${{ matrix.target }}
 
       - name: Build (release)
         shell: bash
@@ -180,7 +124,7 @@ jobs:
           Get-ChildItem -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
           path: release/
@@ -191,10 +135,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           path: release_artifacts
 
@@ -204,7 +148,7 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@v2.4.2
+        uses: softprops/action-gh-release@v2
         with:
           files: |
             release_artifacts/*/*.tar.gz
