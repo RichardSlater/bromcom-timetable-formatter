@@ -6,22 +6,6 @@ This document tracks planned features, enhancements, and outstanding tasks for t
 
 ### Documentation & Developer Experience
 
-- [ ] **Set up GitHub Pages for rustdoc API documentation**
-  - Configure GitHub Actions workflow to build and deploy rustdoc to `gh-pages` branch
-  - Ensure automatic updates on releases
-  - Add link to README
-
-- [ ] **Create minimal synthetic test PDF**
-  - Build a simple PDF with known coordinate structure for testing parser edge cases
-  - Document expected parsing behavior
-  - Use for regression testing
-
-- [ ] **Document testing strategy**
-  - Explain unit vs integration test approach
-  - Define coverage targets (aim for >80% on core logic)
-  - Add guide for writing new tests
-  - Document test fixtures and their purpose
-
 ### Features & Enhancements
 
 - [ ] **Add student name extraction from PDF**
@@ -153,6 +137,9 @@ This document tracks planned features, enhancements, and outstanding tasks for t
 - [x] Community documentation (CONTRIBUTING, CODE_OF_CONDUCT, SECURITY, SUPPORT)
 - [x] GitHub Actions CI/CD pipelines
 - [x] Pre-commit hooks for code quality
+- [x] GitHub Pages deployment with brochure + rustdoc (PR [#23](https://github.com/RichardSlater/bromcom-timetable-formatter/pull/23))
+- [x] Synthetic Bromcom-style PDF fixture + generator script (`scripts/create_synthetic_pdf.py`) for parser tests
+- [x] Testing strategy documentation (`docs/testing.md`) covering unit/integration guidance and coverage goals
 
 ## Contributing
 

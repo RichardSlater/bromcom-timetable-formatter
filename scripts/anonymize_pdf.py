@@ -9,26 +9,23 @@ content streams.
 Usage:
     python3 scripts/anonymize_pdf.py input/original.pdf input/anonymized.pdf
 
-Dependencies:
-    pip install pikepdf
-
-The script automatically detects teacher names (Mr/Ms/Mrs/Miss + surname) and
-student names, replacing them with test fixtures while preserving character
-counts for PDF structure integrity.
+The script restricts input/output paths to a repository base directory by
+default. The base directory is auto-detected by searching upward for a
+.git directory or a 'Cargo.toml' file; a custom `--base-dir` may be provided.
 """
 
+import argparse
 import sys
 import re
 from pathlib import Path
 from collections import defaultdict
-from typing import Dict, Set
+from typing import Dict, Set, Optional
 
 try:
     import pikepdf
 except ImportError:
     print("Error: pikepdf is required. Install it with: pip install pikepdf")
     sys.exit(1)
-
 
 # Test fixture name generators
 TEACHER_FIXTURES = [
@@ -47,6 +44,7 @@ LAST_NAMES = [
     "Data", "User", "Person", "Student", "Subject", "Entity", "Record",
     "Entry", "Item", "Object", "Element", "Unit"
 ]
+
 
 
 def generate_replacement_name(original: str, used_names: Set[str], counter: Dict[str, int]) -> str:
@@ -356,6 +354,81 @@ def extract_text_from_pdf(pdf: pikepdf.Pdf) -> str:
 
     # Re-encode
     return text.encode('latin-1', errors='ignore')
+
+
+def get_default_base_dir() -> Path:
+    """Return a reasonable repository root by searching upward from this file.
+
+    The function walks parent directories looking for a VCS marker ('.git') or
+    a repository marker like 'Cargo.toml'. If none is found, it falls back to
+    the parent of this script.
+    """
+
+    candidate = Path(__file__).resolve()
+
+    # Check the candidate path itself first (avoid allocating a large list)
+    if (candidate / '.git').exists() or (candidate / 'Cargo.toml').exists():
+        return candidate
+
+    # Then walk upward through parents lazily
+    for parent in candidate.parents:
+        if (parent / '.git').exists() or (parent / 'Cargo.toml').exists():
+            return parent
+
+    # Fallback: one level up from scripts/ if nothing obvious found
+    return candidate.parents[1]
+
+
+def sanitize_user_path(raw_path: str, base_dir: Path) -> Path:
+    """Resolve user-supplied paths relative to a trusted base directory.
+
+    Validates that the resolved path is located within the base directory to
+    prevent path traversal and unintended access outside the workspace.
+    """
+
+    resolved_base = base_dir.resolve()
+    candidate = Path(raw_path)
+
+    if candidate.is_absolute():
+        resolved_candidate = candidate.resolve()
+    else:
+        resolved_candidate = (resolved_base / candidate).resolve()
+
+    try:
+        resolved_candidate.relative_to(resolved_base)
+    except ValueError as exc:
+        raise ValueError(
+            f"Path '{resolved_candidate}' is outside the allowed base directory {resolved_base}"
+        ) from exc
+
+    return resolved_candidate
+
+
+def parse_args() -> argparse.Namespace:
+    """Parse command-line arguments for the anonymizer script."""
+
+    parser = argparse.ArgumentParser(
+        description="Anonymize Bromcom PDFs while keeping file access within a trusted directory."
+    )
+    parser.add_argument(
+        "input_pdf",
+        help="Path to the original PDF (relative to --base-dir unless absolute within it)",
+    )
+    parser.add_argument(
+        "output_pdf",
+        help="Path where the anonymized PDF will be written (relative to --base-dir)",
+    )
+    parser.add_argument(
+        "--base-dir",
+        default=str(get_default_base_dir()),
+        help=(
+            "Trusted base directory that user-supplied paths must reside in. "
+            "Defaults to the repository root."
+        ),
+    )
+
+    return parser.parse_args()
+
 
 
 def anonymize_pdf(input_path: Path, output_path: Path) -> None:

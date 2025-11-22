@@ -5,11 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bromcom Timetable Formatter - Transform PDF Timetables into Visual Schedules</title>
     <meta name="description" content="Parse Bromcom PDF timetables and generate beautiful, color-coded SVG visualizations with integrated school maps.">
+    <script>
+        (function () {
+            const storageKey = 'btf-theme';
+            try {
+                const storedTheme = localStorage.getItem(storageKey);
+                if (storedTheme) {
+                    document.documentElement.dataset.theme = storedTheme;
+                }
+            } catch (error) {
+                console.warn('Theme preference could not be loaded', error);
+            }
+        })();
+    </script>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <header class="hero">
         <div class="container">
+            <div class="hero-top-bar">
+                <button class="theme-toggle" type="button" data-theme-toggle aria-pressed="false">
+                    <span class="theme-toggle__icon" aria-hidden="true">🌙</span>
+                    <span class="theme-toggle__label">Dark mode</span>
+                </button>
+            </div>
             <h1>Bromcom Timetable Formatter</h1>
             <p class="tagline">Transform PDF timetables into beautiful, color-coded visual schedules</p>
             <div class="cta-buttons">
@@ -65,16 +84,18 @@
                 <div class="demo-comparison">
                     <div class="demo-item">
                         <h3>Before: Bromcom PDF</h3>
-                        <div class="demo-placeholder">
-                            <p>📄 Standard PDF timetable from Bromcom</p>
+                        <div class="demo-card">
+                            <img src="assets/before-pdf.svg" alt="Stylized representation of the original Bromcom PDF timetable" class="demo-image" loading="lazy" />
                         </div>
+                        <p class="demo-caption">Raw export with plain text rows</p>
                     </div>
                     <div class="demo-arrow">→</div>
                     <div class="demo-item">
                         <h3>After: Formatted SVG</h3>
-                        <div class="demo-placeholder">
-                            <p>🎨 Color-coded timetable + school map</p>
+                        <div class="demo-card">
+                            <img src="assets/after-svg.svg" alt="Color-coded timetable cards showing periods with room and teacher labels" class="demo-image" loading="lazy" />
                         </div>
+                        <p class="demo-caption">Color-coded timetable ready for printing</p>
                     </div>
                 </div>
             </div>
@@ -224,5 +245,80 @@ label = "Maths"</code></pre>
             </p>
         </div>
     </footer>
+    <script>
+        (function () {
+            const storageKey = 'btf-theme';
+            const root = document.documentElement;
+            const toggle = document.querySelector('[data-theme-toggle]');
+            if (!toggle) {
+                return;
+            }
+
+            const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+
+            const getStoredTheme = () => {
+                try {
+                    return localStorage.getItem(storageKey);
+                } catch (error) {
+                    console.warn('Theme preference could not be read', error);
+                    return null;
+                }
+            };
+
+            const setStoredTheme = (value) => {
+                try {
+                    localStorage.setItem(storageKey, value);
+                } catch (error) {
+                    console.warn('Theme preference could not be saved', error);
+                }
+            };
+
+            const applyTheme = (theme, shouldPersist = true) => {
+                root.dataset.theme = theme;
+                if (shouldPersist) {
+                    setStoredTheme(theme);
+                }
+                updateToggleLabel();
+            };
+
+            const updateToggleLabel = () => {
+                const isDark = (root.dataset.theme || 'light') === 'dark';
+                toggle.setAttribute('aria-pressed', String(isDark));
+                const icon = toggle.querySelector('.theme-toggle__icon');
+                const label = toggle.querySelector('.theme-toggle__label');
+                if (icon) {
+                    icon.textContent = isDark ? '☀️' : '🌙';
+                }
+                if (label) {
+                    label.textContent = isDark ? 'Light mode' : 'Dark mode';
+                }
+            };
+
+            const storedTheme = getStoredTheme();
+            if (storedTheme) {
+                root.dataset.theme = storedTheme;
+            } else if (!root.dataset.theme) {
+                root.dataset.theme = systemPrefersDark.matches ? 'dark' : 'light';
+            }
+
+            updateToggleLabel();
+
+            toggle.addEventListener('click', () => {
+                const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark';
+                applyTheme(nextTheme);
+            });
+
+            const handlePreferenceChange = (event) => {
+                if (!getStoredTheme()) {
+                    applyTheme(event.matches ? 'dark' : 'light', false);
+                }
+            };
+
+            // Modern browsers support addEventListener on MediaQueryList.
+            // We intentionally drop the older addListener fallback to keep the
+            // code simple and focused on supported platforms.
+            systemPrefersDark.addEventListener('change', handlePreferenceChange);
+        })();
+    </script>
 </body>
 </html>

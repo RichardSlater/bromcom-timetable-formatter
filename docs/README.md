@@ -8,6 +8,7 @@ This directory contains the source files for the project's GitHub Pages site, wh
 docs/
 ├── index.html          # Main landing page
 ├── style.css           # Styles for the brochure site
+├── assets/            # Static images (before/after screenshots, logos)
 └── README.md           # This file
 ```
 
@@ -75,8 +76,13 @@ To update the brochure site:
 
 1. Edit `docs/index.html` for content changes
 2. Edit `docs/style.css` for styling changes
-3. Commit and push to `main`
-4. GitHub Actions will automatically rebuild and deploy
+3. Update any SVG/PNG assets in `docs/assets/` if screenshots or graphics change
+4. Commit and push to `main`
+5. GitHub Actions will automatically rebuild and deploy
+6. The landing page ships with a dark-mode toggle that relies on shared CSS variables—reuse the existing custom properties so new sections inherit both light and dark palettes automatically.
+
+Dark palette note:
+- The dark theme variables are centralized in `:root` as `--dark-*` custom properties. Both the explicit `data-theme="dark"` selector and the `@media (prefers-color-scheme: dark)` rule alias the active CSS variables to these `--dark-*` values. This avoids duplicated hex literals and keeps the dark palette a single source of truth.
 
 ## Updating API Documentation
 
