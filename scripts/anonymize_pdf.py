@@ -494,17 +494,17 @@ def main():
     # Parse arguments using argparse for proper validation
     args = parse_args()
 
-    # Convert base_dir string to Path and sanitize user-provided paths
-    # Determine canonical repository root directory.
-    repo_root = Path(get_default_base_dir()).resolve()
-    base_dir = Path(args.base_dir).resolve()
-    # Ensure user-provided --base-dir is contained in the detected repo root.
+    # Determine canonical repository root directory (trusted source)
+    repo_root = get_default_base_dir()
+
+    # Validate and sanitize the user-provided base_dir using the trusted repo_root
     try:
-        base_dir.relative_to(repo_root)
-    except ValueError:
-        print(f"Error: The supplied --base-dir ({base_dir}) is not inside the trusted repository root ({repo_root}).")
+        base_dir = sanitize_user_path(args.base_dir, repo_root)
+    except ValueError as e:
+        print(f"Error: Invalid --base-dir: {e}")
         sys.exit(1)
 
+    # Now sanitize input and output paths using the validated base_dir
     try:
         input_path = sanitize_user_path(args.input_pdf, base_dir)
         output_path = sanitize_user_path(args.output_pdf, base_dir)
