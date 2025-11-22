@@ -314,11 +314,10 @@ label = "Maths"</code></pre>
                 }
             };
 
-            if (typeof systemPrefersDark.addEventListener === 'function') {
-                systemPrefersDark.addEventListener('change', handlePreferenceChange);
-            } else if (typeof systemPrefersDark.addListener === 'function') {
-                systemPrefersDark.addListener(handlePreferenceChange);
-            }
+            // Modern browsers support addEventListener on MediaQueryList.
+            // We intentionally drop the older addListener fallback to keep the
+            // code simple and focused on supported platforms.
+            systemPrefersDark.addEventListener('change', handlePreferenceChange);
         })();
     </script>
 </body>
