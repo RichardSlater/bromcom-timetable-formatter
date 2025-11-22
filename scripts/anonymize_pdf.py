@@ -404,8 +404,6 @@ def sanitize_user_path(raw_path: str, base_dir: Path) -> Path:
 
     # Additional check: prevent symlink traversal outside base dir
     for parent in resolved_candidate.parents:
-        if parent == resolved_base.parent:  # Stop before leaving base_dir's ancestor chain
-            break
         # Only need to check ancestors down to resolved_base (inclusive)
         if parent.is_symlink():
             raise ValueError(
