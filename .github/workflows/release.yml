@@ -4,6 +4,18 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Tag to create (e.g. v0.1.0)'
+        required: false
+      release_name:
+        description: 'Optional release title'
+        required: false
+      publish_release:
+        description: 'Set to true to publish a GitHub release'
+        required: false
+        default: 'false'
 
 permissions:
   contents: write
@@ -21,106 +33,53 @@ jobs:
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: false
+            rust_targets: x86_64-unknown-linux-gnu
           - os: ubuntu-latest
             name: linux-riscv64
             target: riscv64gc-unknown-linux-gnu
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
+            rust_targets: ''
           - os: ubuntu-latest
             name: linux-arm64
             target: aarch64-unknown-linux-gnu
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
+            rust_targets: ''
           - os: macos-latest
             name: macos-x86_64
             target: x86_64-apple-darwin
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: false
+            rust_targets: x86_64-apple-darwin
           - os: windows-latest
             name: windows-x86_64
             target: x86_64-pc-windows-msvc
             archive_ext: zip
             bin_name: timetable_cli.exe
             use_cross: false
+            rust_targets: x86_64-pc-windows-msvc
           - os: windows-latest
             name: windows-arm64
             target: aarch64-pc-windows-msvc
             archive_ext: zip
             bin_name: timetable_cli.exe
             use_cross: false
+            rust_targets: aarch64-pc-windows-msvc
           - os: ubuntu-latest
             name: freebsd-x86_64
             target: x86_64-unknown-freebsd
             archive_ext: tar.gz
             bin_name: timetable_cli
             use_cross: true
-          - os: ubuntu-latest
-            name: freebsd-arm64
-            target: aarch64-unknown-freebsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: macos-latest
-            name: macos-arm64
-            target: aarch64-apple-darwin
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: false
-          - os: ubuntu-latest
-            name: freebsd-riscv64
-            target: riscv64gc-unknown-freebsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-musl-x86_64
-            target: x86_64-unknown-linux-musl
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-musl-arm64
-            target: aarch64-unknown-linux-musl
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: linux-armv7
-            target: armv7-unknown-linux-gnueabihf
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: netbsd-x86_64
-            target: x86_64-unknown-netbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: netbsd-arm64
-            target: aarch64-unknown-netbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: openbsd-x86_64
-            target: x86_64-unknown-openbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
-          - os: ubuntu-latest
-            name: openbsd-arm64
-            target: aarch64-unknown-openbsd
-            archive_ext: tar.gz
-            bin_name: timetable_cli
-            use_cross: true
+            rust_targets: x86_64-unknown-freebsd
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
 
       - name: Install dependencies (Linux RISC-V)
         if: matrix.target == 'riscv64gc-unknown-linux-gnu'
@@ -130,16 +89,16 @@ jobs:
 
       - name: Install cargo-binstall
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@v1.16.1
+        uses: cargo-bins/cargo-binstall@main
 
-      - name: Install cross
+      - name: Install Cross
         if: matrix.use_cross
         run: cargo binstall --no-confirm cross
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.use_cross == false && matrix.target || '' }}
+          targets: ${{ matrix.rust_targets }}
 
       - name: Build (release)
         shell: bash
@@ -180,7 +139,7 @@ jobs:
           Get-ChildItem -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.name }}
           path: release/
@@ -189,12 +148,31 @@ jobs:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
+    # Runs automatically for tagged version pushes, or manually when publish_release is true and a release_tag is supplied.
+    if: >
+      (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
+      (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && github.event.inputs.release_tag != '')
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v4
+
+      - name: Ensure release tag exists (workflow_dispatch)
+        if: github.event_name == 'workflow_dispatch'
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.release_tag }}
+        run: |
+          git fetch --tags origin
+          if git rev-parse "refs/tags/$RELEASE_TAG" >/dev/null 2>&1; then
+            echo "Tag $RELEASE_TAG already exists. Skipping creation."
+          else
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+            git tag -a "$RELEASE_TAG" -m "Release created via workflow dispatch"
+            git push origin "$RELEASE_TAG"
+          fi
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v4
         with:
           path: release_artifacts
 
@@ -204,8 +182,10 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@v2.4.2
+        uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
+          name: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release_name != '' && github.event.inputs.release_name || github.event.inputs.release_tag) || github.ref_name }}
           files: |
             release_artifacts/*/*.tar.gz
             release_artifacts/*/*.zip
