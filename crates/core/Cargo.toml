@@ -12,7 +12,7 @@ categories = ["parsing", "visualization"]
 [dependencies]
 lopdf = "0.38"
 serde = { version = "1.0", features = ["derive"] }
-toml = "0.9"
+toml = "1.0"
 svg = "0.18"
 roxmltree = "0.21"
 thiserror = "2.0"
