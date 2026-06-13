@@ -117,7 +117,7 @@ pub fn process_map(path: &Path, highlights: &[MapHighlight]) -> Result<String, P
     }
 
     // Apply replacements in reverse order
-    replacements.sort_by(|a, b| b.0.cmp(&a.0));
+    replacements.sort_by_key(|b| std::cmp::Reverse(b.0));
 
     // Deduplicate based on start index to avoid conflicting writes if regions overlap
     replacements.dedup_by_key(|k| k.0);
