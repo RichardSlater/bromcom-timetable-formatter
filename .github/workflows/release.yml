@@ -20,15 +20,15 @@ on:
         required: false
         default: 'false'
 
-permissions:
-  contents: write
-  id-token: write
-  attestations: write
-
 jobs:
   build:
     name: Build artifacts (${{ matrix.name }})
     runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+      actions: write
+      id-token: write
+      attestations: write
     strategy:
       matrix:
         include:
@@ -167,6 +167,9 @@ jobs:
     name: Create Release
     needs: build
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
     # Runs automatically for tagged version pushes, or manually when publish_release is true and a release_tag is supplied.
     if: >
       (github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v')) ||
