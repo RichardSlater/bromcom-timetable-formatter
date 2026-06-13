@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
         with:
           fetch-depth: 0
 
@@ -103,14 +103,14 @@ jobs:
 
       - name: Install cargo-binstall
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@main
+        uses: cargo-bins/cargo-binstall@1d2ff7ce3f67fe46c45478d09d1670c1f1b100dc
 
       - name: Install Cross
         if: matrix.use_cross
         run: cargo binstall --no-confirm cross
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8
         with:
           targets: ${{ matrix.rust_targets }}
 
@@ -153,13 +153,13 @@ jobs:
           Get-ChildItem -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
         with:
           name: ${{ matrix.name }}
           path: release/
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1
+        uses: actions/attest-build-provenance@b3e506e8c389afc651c5bacf2b8f2a1ea0557215
         with:
           subject-path: 'release/*.tar.gz,release/*.zip'
 
@@ -173,7 +173,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && github.event.inputs.release_tag != '')
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
 
       - name: Ensure release tag exists (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
@@ -191,7 +191,7 @@ jobs:
           fi
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
         with:
           path: release_artifacts
 
@@ -232,7 +232,7 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
           name: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release_name != '' && github.event.inputs.release_name || github.event.inputs.release_tag) || github.ref_name }}
