@@ -153,13 +153,13 @@ jobs:
           Get-ChildItem -Force
 
       - name: Upload artifact
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a
         with:
           name: ${{ matrix.name }}
           path: release/
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@b3e506e8c389afc651c5bacf2b8f2a1ea0557215
+        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32
         with:
           subject-path: 'release/*.tar.gz,release/*.zip'
 
@@ -191,7 +191,7 @@ jobs:
           fi
 
       - name: Download all build artifacts
-        uses: actions/download-artifact@018cc2cf5baa6db3ef3c5f8a56943fffe632ef53
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c
         with:
           path: release_artifacts
 
@@ -232,7 +232,7 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@3bb12739c298aeb8a4eeaf626c5b8d85266b0e65
+        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
           name: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release_name != '' && github.event.inputs.release_name || github.event.inputs.release_tag) || github.ref_name }}
