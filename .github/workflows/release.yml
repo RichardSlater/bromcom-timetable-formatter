@@ -103,7 +103,7 @@ jobs:
 
       - name: Install cargo-binstall
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@1d2ff7ce3f67fe46c45478d09d1670c1f1b100dc
+        uses: cargo-bins/cargo-binstall@733bffce578000b64507ac3d683a61c2b605c21d
 
       - name: Install Cross
         if: matrix.use_cross
