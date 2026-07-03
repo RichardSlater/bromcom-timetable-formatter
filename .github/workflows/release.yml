@@ -91,7 +91,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
         with:
           fetch-depth: 0
 
@@ -103,7 +103,7 @@ jobs:
 
       - name: Install cargo-binstall
         if: matrix.use_cross
-        uses: cargo-bins/cargo-binstall@1d2ff7ce3f67fe46c45478d09d1670c1f1b100dc
+        uses: cargo-bins/cargo-binstall@d9924acdd31c88b15c7a896bafd124fd4abcd1f0
 
       - name: Install Cross
         if: matrix.use_cross
@@ -159,7 +159,7 @@ jobs:
           path: release/
 
       - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@a2bbfa25375fe432b6a289bc6b6cd05ecd0c4c32
+        uses: actions/attest-build-provenance@0f67c3f4856b2e3261c31976d6725780e5e4c373
         with:
           subject-path: 'release/*.tar.gz,release/*.zip'
 
@@ -176,7 +176,7 @@ jobs:
       (github.event_name == 'workflow_dispatch' && github.event.inputs.publish_release == 'true' && github.event.inputs.release_tag != '')
     steps:
       - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0
 
       - name: Ensure release tag exists (workflow_dispatch)
         if: github.event_name == 'workflow_dispatch'
@@ -235,7 +235,7 @@ jobs:
       - name: Create GitHub release and upload artifacts
         id: create_release
         # v2 of softprops/action-gh-release uses environment files instead of the deprecated set-output
-        uses: softprops/action-gh-release@b4309332981a82ec1c5618f44dd2e27cc8bfbfda
+        uses: softprops/action-gh-release@718ea10b132b3b2eba29c1007bb80653f286566b
         with:
           tag_name: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.release_tag || github.ref_name }}
           name: ${{ github.event_name == 'workflow_dispatch' && (github.event.inputs.release_name != '' && github.event.inputs.release_name || github.event.inputs.release_tag) || github.ref_name }}
