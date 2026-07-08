@@ -10,7 +10,7 @@ keywords = ["pdf", "timetable", "svg", "bromcom", "education"]
 categories = ["parsing", "visualization"]
 
 [dependencies]
-lopdf = "0.41"
+lopdf = "0.43"
 serde = { version = "1.0", features = ["derive"] }
 toml = "1.1"
 svg = "0.18"
