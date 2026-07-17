@@ -116,7 +116,7 @@ fn extract_text_from_page(
     doc: &Document,
     page_id: (u32, u16),
 ) -> Result<Vec<TextItem>, ParserError> {
-    let content_bytes = doc.get_page_content(page_id)?;
+    let content_bytes = doc.get_page_content(page_id);
     let content = lopdf::content::Content::decode(&content_bytes)?;
     let mut text_items = Vec::new();
 
