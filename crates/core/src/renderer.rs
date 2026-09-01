@@ -5,6 +5,7 @@
 
 use crate::config::Config;
 use crate::parser::Week;
+use crate::path_safety::output_file;
 use std::fs;
 use std::path::Path;
 use svg::node::element::{Group, Rectangle, Text};
@@ -206,7 +207,7 @@ pub fn render_timetable(
     // Close the root svg
     svg_string.push_str("</svg>");
 
-    fs::write(output_path, svg_string)?;
+    fs::write(output_file(output_path)?, svg_string)?;
 
     Ok(())
 }
@@ -559,8 +560,9 @@ mod tests {
         let map_svg = "<svg><g id=\"Maths_Rooms\"><path d=\"M0\"/></g><g id=\"Science_Rooms\"><path d=\"M0\"/></g></svg>";
         let week = sample_week();
 
-        let mut out_path = env::temp_dir();
-        out_path.push("timetable_test_output.svg");
+        let out_path = env::current_dir()
+            .unwrap()
+            .join(format!("timetable_test_output_{}.svg", std::process::id()));
 
         let res = render_timetable(&week, &cfg, map_svg, &out_path);
         assert!(res.is_ok());

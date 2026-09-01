@@ -65,6 +65,7 @@
 
 pub mod config;
 pub mod parser;
+pub mod path_safety;
 pub mod processor;
 pub mod renderer;
 

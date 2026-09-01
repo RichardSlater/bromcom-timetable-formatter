@@ -3,6 +3,7 @@
 //! This module manipulates school map SVG files by finding elements matching
 //! department IDs and applying color fills to highlight them.
 
+use crate::path_safety::existing_file;
 use regex::Regex;
 use roxmltree::Document;
 use std::fs;
@@ -77,7 +78,7 @@ pub struct MapHighlight {
 /// # }
 /// ```
 pub fn process_map(path: &Path, highlights: &[MapHighlight]) -> Result<String, ProcessorError> {
-    let content = fs::read_to_string(path)?;
+    let content = fs::read_to_string(existing_file(path)?)?;
     let doc = Document::parse(&content)?;
 
     // We will collect replacements: (start_index, end_index, new_text)
@@ -140,8 +141,12 @@ mod tests {
 
     #[test]
     fn process_map_replaces_fill() {
-        let temp_dir = env::temp_dir();
-        let file = temp_dir.join("test_map.svg");
+        let file = crate::path_safety::output_file(
+            &env::current_dir()
+                .unwrap()
+                .join(format!("test_map_{}.svg", std::process::id())),
+        )
+        .unwrap();
         let content = r###"<?xml version="1.0"?>
 <svg>
     <g id="Maths_Rooms">
@@ -160,5 +165,6 @@ mod tests {
         }];
         let out = process_map(&file, &highlights).unwrap();
         assert!(out.contains("fill=\"#ff0000\""));
+        std::fs::remove_file(file).unwrap();
     }
 }
