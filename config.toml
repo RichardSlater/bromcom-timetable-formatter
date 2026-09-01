@@ -111,46 +111,5 @@ label = "Food Tech"
 # Only the fields you specify will be changed - others remain from the PDF.
 # If no matching lesson is found, a warning is printed to the console.
 
-# Week 1 overrides - Correct parsing errors in science rooms
-[[overrides]]
-week = 1                   # Week 1
-day = "Thursday"           # Thursday, L1
-period = "L1"
-room = "SC6"               # Correct room to SC6
-class_code = "SC6"         # Update class code to match
-
-[[overrides]]
-week = 1
-day = "Friday"
-period = "L1"
-room = "SC2"
-class_code = "SC2"
-
-[[overrides]]
-week = 1
-day = "Monday"
-period = "L2"
-room = "SC3"
-class_code = "SC3"
-
-# Week 2 overrides
-[[overrides]]
-week = 2                   # Week 2
-day = "Monday"             # Monday, L2
-period = "L2"
-room = "SC8"
-class_code = "SC8"
-
-[[overrides]]
-week = 2
-day = "Wednesday"
-period = "L3"
-room = "HU3"
-class_code = "HU3"
-
-[[overrides]]
-week = 2
-day = "Wednesday"
-period = "L5"
-room = "SC8"
-class_code = "SC8"
+# No overrides are currently required. The parser regression fixture covers the
+# wrapped-PDI layout that the previous room overrides were compensating for.

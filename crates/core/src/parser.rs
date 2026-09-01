@@ -378,12 +378,16 @@ fn parse_week_items(items: &[&TextItem]) -> Vec<Lesson> {
             // For teachers: Y tolerance needs to be larger (they're positioned below)
             // So we'll use a two-pass approach
 
-            // First pass: get main cell items (subject, room, class code)
+            // First pass: get main cell items (subject, room, class code).
+            // PDI is the only wrapped period in this export; its room is just over
+            // the usual 25-point boundary. Keep that small allowance local to PD
+            // so ordinary rows cannot absorb the room from the following row.
+            let main_y_tolerance = if *period_idx == 0 { 26.0 } else { 25.0 };
             let main_items: Vec<&&TextItem> = items
                 .iter()
                 .filter(|item| {
                     (item.x - day_x).abs() < 45.0 &&
-                    (item.y - period_y).abs() < 25.0 &&
+                    (item.y - period_y).abs() <= main_y_tolerance &&
                     // Exclude markers and day headers
                     !days.iter().any(|d| item.text.trim().eq_ignore_ascii_case(d)) &&
                     !marker_map.iter().any(|(m, _)| item.text.trim() == *m)
@@ -431,7 +435,9 @@ fn parse_lesson_content(items: Vec<&&TextItem>, day_index: usize, period_index: 
 
     let room_regex = Regex::new(r"^[A-Z]{2,3}\d+[A-Z]?$").unwrap(); // e.g. SC8, HU5, MA3 - strict format
     let teacher_regex = Regex::new(r"^(Mr|Ms|Mrs|Miss)\s+.*$").unwrap();
-    let class_regex = Regex::new(r"^\d[A-Z].*$").unwrap(); // e.g. 8A1/Co
+    // Class codes can start with either one or two year digits (for example,
+    // `8A1/Co` and the newer `10T7/Pd` format).
+    let class_regex = Regex::new(r"^\d{1,2}[A-Z][A-Za-z0-9]*(?:/[A-Za-z0-9]+)?$").unwrap();
     let days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
 
     // Words that are location indicators (not room codes, not part of subject)
@@ -466,11 +472,13 @@ fn parse_lesson_content(items: Vec<&&TextItem>, day_index: usize, period_index: 
         }
     }
 
-    // Join subject parts with spaces
+    // Join subject parts with spaces. Bromcom's newer export writes Personal
+    // Development Intervention as a long, wrapped subject; use its established
+    // timetable abbreviation so it fits in a cell.
     let subject = if subject_parts.is_empty() {
         "Unknown".to_string()
     } else {
-        subject_parts.join(" ")
+        abbreviate_subject(&subject_parts.join(" "))
     };
 
     Lesson {
@@ -480,6 +488,17 @@ fn parse_lesson_content(items: Vec<&&TextItem>, day_index: usize, period_index: 
         class_code,
         day_index,
         period_index,
+    }
+}
+
+fn abbreviate_subject(subject: &str) -> String {
+    if subject
+        .split_whitespace()
+        .eq(["Personal", "Development", "Intervention"])
+    {
+        "PDI".to_string()
+    } else {
+        subject.to_string()
     }
 }
 
@@ -606,7 +625,7 @@ mod tests {
         let refsrefs: Vec<&&TextItem> = refs.iter().collect();
 
         let lesson = parse_lesson_content(refsrefs, 0, 0);
-        assert_eq!(lesson.subject, "Personal Development Intervention");
+        assert_eq!(lesson.subject, "PDI");
         assert_eq!(lesson.room, "HU9");
         assert_eq!(lesson.teacher, "Ms Test A");
     }
@@ -626,6 +645,44 @@ mod tests {
         assert_eq!(lesson.subject, "Science");
         assert_eq!(lesson.class_code, "8A1/Co");
         assert_eq!(lesson.teacher, "Mr Test B");
+    }
+
+    #[test]
+    fn parse_week_keeps_room_after_wrapped_subject() {
+        let src = [
+            make_item(100.0, 50.0, "Monday"),
+            make_item(50.0, 100.0, "PDI"),
+            make_item(100.0, 102.0, "Personal Development"),
+            make_item(100.0, 111.0, "Intervention"),
+            make_item(100.0, 119.0, "10T7/Pd"),
+            make_item(100.0, 126.0, "MA7"),
+            make_item(100.0, 126.0, "Ms Test A"),
+        ];
+        let items: Vec<&TextItem> = src.iter().collect();
+
+        let lessons = parse_week_items(&items);
+        assert_eq!(lessons.len(), 1);
+        assert_eq!(lessons[0].subject, "PDI");
+        assert_eq!(lessons[0].class_code, "10T7/Pd");
+        assert_eq!(lessons[0].room, "MA7");
+        assert_eq!(lessons[0].teacher, "Ms Test A");
+    }
+
+    #[test]
+    fn parse_lesson_detects_two_digit_classcode() {
+        let src = [
+            make_item(100.0, 200.0, "Personal Development Intervention"),
+            make_item(100.0, 210.0, "10T7/Pd"),
+            make_item(100.0, 220.0, "Ms Test B"),
+        ];
+
+        let refs: Vec<&TextItem> = src.iter().collect();
+        let refsrefs: Vec<&&TextItem> = refs.iter().collect();
+
+        let lesson = parse_lesson_content(refsrefs, 1, 2);
+        assert_eq!(lesson.subject, "PDI");
+        assert_eq!(lesson.class_code, "10T7/Pd");
+        assert_eq!(lesson.teacher, "Ms Test B");
     }
 
     #[test]

@@ -459,12 +459,11 @@ fn draw_timetable_grid(week: &Week, config: &Config, width: i32, height: i32) ->
             group = group.add(text_teacher);
         }
 
-        // Text: Class code as vertical label on right (rotated 90°, large font, saturated color)
-        // Use class_code if available, otherwise use subject for Unknown rooms, otherwise room code
-        let label_text = if !lesson.class_code.is_empty() {
-            &lesson.class_code
-        } else if is_unknown_room {
-            &lesson.subject // Use subject for unknown rooms
+        // Text: Room code as vertical label on right (rotated 90°, saturated color).
+        // The group/class code is distinct from the physical room and must not be
+        // shown in this room label (for example, `10T7/Pd` vs `MA7`).
+        let label_text = if is_unknown_room {
+            &lesson.subject // No room is available for this cell.
         } else {
             &lesson.room
         };
@@ -513,7 +512,7 @@ mod tests {
                 subject: "Maths".into(),
                 room: "MA3".into(),
                 teacher: "Ms Test A".into(),
-                class_code: "MA3".into(),
+                class_code: "10A1/Ma".into(),
                 day_index: 0,
                 period_index: 1,
             },
@@ -521,7 +520,7 @@ mod tests {
                 subject: "Science".into(),
                 room: "SC8".into(),
                 teacher: "Mr Test B".into(),
-                class_code: "SC8".into(),
+                class_code: "10A1/Sc".into(),
                 day_index: 1,
                 period_index: 2,
             },
@@ -571,6 +570,7 @@ mod tests {
         assert!(content.contains("Test Student"));
         assert!(content.contains("Maths"));
         assert!(content.contains("MA3"));
+        assert!(!content.contains("10A1/Ma"));
 
         // cleanup
         let _ = std::fs::remove_file(&out_path);
