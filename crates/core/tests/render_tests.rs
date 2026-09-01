@@ -1,6 +1,6 @@
-use std::fs;
 use timetable_core::config::Config;
 use timetable_core::parser::Week;
+use timetable_core::path_safety::{read_project_file, remove_project_file};
 use timetable_core::renderer::render_timetable;
 
 #[test]
@@ -19,16 +19,15 @@ fn render_timetable_without_map_produces_svg() {
         overrides: Vec::new(),
     };
 
-    let mut out_path = std::env::temp_dir();
-    out_path.push(format!(
-        "timetable_test_output_week_{}.svg",
-        std::process::id()
-    ));
-    let _ = fs::remove_file(&out_path);
-
+    let out_path = std::env::current_dir()
+        .expect("current directory is available")
+        .join(format!(
+            "timetable_test_output_week_{}.svg",
+            std::process::id()
+        ));
     render_timetable(&week, &config, "", &out_path).expect("render should succeed");
 
-    let svg = fs::read_to_string(&out_path).expect("read output");
+    let svg = read_project_file(&out_path).expect("read output");
 
     // When map_content is empty, renderer should still produce a valid svg string
     assert!(svg.contains("<svg"));
@@ -38,4 +37,5 @@ fn render_timetable_without_map_produces_svg() {
         occurrences, 1,
         "expected only root <svg> when no map provided"
     );
+    remove_project_file(&out_path).expect("remove test output");
 }

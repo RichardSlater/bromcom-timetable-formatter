@@ -1,9 +1,9 @@
 use anyhow::{Context, Result};
 use clap::Parser;
-use std::fs;
 use std::path::PathBuf;
 use timetable_core::config::Config;
 use timetable_core::parser::parse_pdf;
+use timetable_core::path_safety::{existing_file, output_directory};
 use timetable_core::processor::{process_map, MapHighlight};
 use timetable_core::renderer::render_timetable;
 
@@ -38,20 +38,27 @@ struct Cli {
 fn main() -> Result<()> {
     let cli = Cli::parse();
 
-    println!("Processing timetable from: {:?}", cli.input);
+    let input_path = existing_file(&cli.input).context("Invalid input path")?;
+    let config_path = existing_file(&cli.config).context("Invalid config path")?;
+    let map_path = cli
+        .map
+        .as_deref()
+        .map(existing_file)
+        .transpose()
+        .context("Invalid map path")?;
+    let output_dir = output_directory(&cli.output).context("Invalid output directory")?;
+
+    println!("Processing timetable from: {:?}", input_path);
 
     // 1. Load Config
-    let config = Config::load(&cli.config).context("Failed to load config")?;
+    let config = Config::load(&config_path).context("Failed to load config")?;
 
     // 2. Parse PDF
-    let mut weeks = parse_pdf(&cli.input).context("Failed to parse PDF")?;
+    let mut weeks = parse_pdf(&input_path).context("Failed to parse PDF")?;
     println!("Found {} weeks.", weeks.len());
 
     // 3. Apply overrides from config
     config.apply_overrides(&mut weeks);
-
-    // Ensure output directory exists
-    fs::create_dir_all(&cli.output).context("Failed to create output directory")?;
 
     // 4. Process each week
     for (i, week) in weeks.iter().enumerate() {
@@ -112,7 +119,7 @@ fn main() -> Result<()> {
         }
 
         // 4. Process Map (optional)
-        let map_svg = if let Some(map_path) = &cli.map {
+        let map_svg = if let Some(map_path) = &map_path {
             process_map(map_path, &highlights).context("Failed to process map")?
         } else {
             // No map provided — renderer will skip embedding
@@ -125,7 +132,7 @@ fn main() -> Result<()> {
             .week_name
             .replace(|c: char| !c.is_alphanumeric() && c != ' ', "_");
         let filename = format!("{}_{}.svg", safe_name, i + 1);
-        let output_path = cli.output.join(filename);
+        let output_path = output_dir.join(filename);
 
         render_timetable(&week_with_info, &config, &map_svg, &output_path)
             .context("Failed to render timetable")?;

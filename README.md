@@ -93,7 +93,7 @@ cargo build --release
   --form "11XX"
 ```
 
-Output SVG files will be in the `output/` directory, one per week.
+Output SVG files will be in the `output/` directory, one per week. For safety, input, config, and map files must be within the current project directory, and `--output` must be a relative directory within it.
 
 ## Configuration
 

@@ -3,9 +3,9 @@
 //! This module manipulates school map SVG files by finding elements matching
 //! department IDs and applying color fills to highlight them.
 
+use crate::path_safety::read_project_file;
 use regex::Regex;
 use roxmltree::Document;
-use std::fs;
 use std::path::Path;
 use thiserror::Error;
 
@@ -77,7 +77,7 @@ pub struct MapHighlight {
 /// # }
 /// ```
 pub fn process_map(path: &Path, highlights: &[MapHighlight]) -> Result<String, ProcessorError> {
-    let content = fs::read_to_string(path)?;
+    let content = read_project_file(path)?;
     let doc = Document::parse(&content)?;
 
     // We will collect replacements: (start_index, end_index, new_text)
@@ -140,8 +140,9 @@ mod tests {
 
     #[test]
     fn process_map_replaces_fill() {
-        let temp_dir = env::temp_dir();
-        let file = temp_dir.join("test_map.svg");
+        let file = env::current_dir()
+            .unwrap()
+            .join(format!("test_map_{}.svg", std::process::id()));
         let content = r###"<?xml version="1.0"?>
 <svg>
     <g id="Maths_Rooms">
@@ -152,7 +153,7 @@ mod tests {
     </g>
 </svg>"###;
 
-        std::fs::write(&file, content).unwrap();
+        crate::path_safety::write_project_file(&file, content.into()).unwrap();
 
         let highlights = vec![MapHighlight {
             id: "Maths_Rooms".into(),
@@ -160,5 +161,6 @@ mod tests {
         }];
         let out = process_map(&file, &highlights).unwrap();
         assert!(out.contains("fill=\"#ff0000\""));
+        crate::path_safety::remove_project_file(&file).unwrap();
     }
 }

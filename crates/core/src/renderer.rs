@@ -5,7 +5,9 @@
 
 use crate::config::Config;
 use crate::parser::Week;
-use std::fs;
+use crate::path_safety::write_project_file;
+#[cfg(test)]
+use crate::path_safety::{read_project_file, remove_project_file};
 use std::path::Path;
 use svg::node::element::{Group, Rectangle, Text};
 use svg::Document;
@@ -206,7 +208,7 @@ pub fn render_timetable(
     // Close the root svg
     svg_string.push_str("</svg>");
 
-    fs::write(output_path, svg_string)?;
+    write_project_file(output_path, svg_string)?;
 
     Ok(())
 }
@@ -559,13 +561,14 @@ mod tests {
         let map_svg = "<svg><g id=\"Maths_Rooms\"><path d=\"M0\"/></g><g id=\"Science_Rooms\"><path d=\"M0\"/></g></svg>";
         let week = sample_week();
 
-        let mut out_path = env::temp_dir();
-        out_path.push("timetable_test_output.svg");
+        let out_path = env::current_dir()
+            .unwrap()
+            .join(format!("timetable_test_output_{}.svg", std::process::id()));
 
         let res = render_timetable(&week, &cfg, map_svg, &out_path);
         assert!(res.is_ok());
 
-        let content = std::fs::read_to_string(&out_path).expect("output svg exists");
+        let content = read_project_file(&out_path).expect("output svg exists");
         // basic checks: student name, one subject, and a room label
         assert!(content.contains("Test Student"));
         assert!(content.contains("Maths"));
@@ -573,6 +576,6 @@ mod tests {
         assert!(!content.contains("10A1/Ma"));
 
         // cleanup
-        let _ = std::fs::remove_file(&out_path);
+        remove_project_file(&out_path).expect("remove test output");
     }
 }
