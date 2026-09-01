@@ -86,7 +86,7 @@ pub fn read_project_file(path: &Path) -> Result<String> {
     fs::read_to_string(path)
 }
 
-/// Create and resolve a relative output directory inside the current project directory.
+/// Resolve an existing relative output directory inside the current project directory.
 pub fn output_directory(path: &Path) -> Result<PathBuf> {
     let path_text = path_text(path)?;
     if path_text.contains("..") {
@@ -117,9 +117,7 @@ pub fn output_directory(path: &Path) -> Result<PathBuf> {
     }
 
     let project_root = current_directory()?;
-    let directory = project_root.join(path);
-    fs::create_dir_all(&directory)?;
-    let directory = directory.canonicalize()?;
+    let directory = project_root.join(path).canonicalize()?;
     if !directory.starts_with(&project_root) {
         return Err(Error::new(
             ErrorKind::PermissionDenied,
