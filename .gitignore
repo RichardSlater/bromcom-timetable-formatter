@@ -171,3 +171,7 @@ $RECYCLE.BIN/
 output/
 input/
 resources/
+prompts/opsx-*
+.pi/
+.github/prompts/opsx-*
+.github/skills/openspec-*
