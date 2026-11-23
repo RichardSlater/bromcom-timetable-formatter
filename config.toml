@@ -8,6 +8,8 @@
 # ============================================================================
 # Each [[mappings]] section defines how rooms with a specific prefix are styled.
 #
+# Config files may be at most 1 MiB. Colors use #RGB, #RGBA, #RRGGBB or #RRGGBBAA.
+#
 # Fields:
 #   prefix    - Room code prefix to match (e.g., "MA" matches MA1, MA2, MA3, etc.)
 #               Case-sensitive. Longer prefixes take precedence (MA1 > MA).

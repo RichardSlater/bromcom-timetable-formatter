@@ -107,7 +107,7 @@ pub fn process_map(path: &Path, highlights: &[MapHighlight]) -> Result<String, P
                             replacements.push((
                                 absolute_start,
                                 absolute_end,
-                                format!("fill=\"{}\"", highlight.color),
+                                format!("fill=\"{}\"", escape_attribute(&highlight.color)),
                             ));
                         }
                     }
@@ -131,6 +131,17 @@ pub fn process_map(path: &Path, highlights: &[MapHighlight]) -> Result<String, P
     }
 
     Ok(result)
+}
+
+fn escape_attribute(value: &str) -> String {
+    value
+        .replace('&', "&amp;")
+        .replace('"', "&quot;")
+        .replace('<', "&lt;")
+        .replace('>', "&gt;")
+        .replace('\t', "&#9;")
+        .replace('\n', "&#10;")
+        .replace('\r', "&#13;")
 }
 
 #[cfg(test)]
@@ -161,6 +172,21 @@ mod tests {
         }];
         let out = process_map(&file, &highlights).unwrap();
         assert!(out.contains("fill=\"#ff0000\""));
+
+        let color = "example \" & < >\t\n\r";
+        let highlights = [MapHighlight {
+            id: "Maths_Rooms".into(),
+            color: color.into(),
+        }];
+        let out = process_map(&file, &highlights).unwrap();
         crate::path_safety::remove_project_file(&file).unwrap();
+        let doc = roxmltree::Document::parse(&out).unwrap();
+        let path = doc
+            .descendants()
+            .find(|node| node.has_tag_name("path"))
+            .unwrap();
+        assert_eq!(path.attribute("fill"), Some(color));
+        assert_eq!(path.attribute("d"), Some("M0"));
+        assert_eq!(path.attributes().len(), 2);
     }
 }
