@@ -4,9 +4,12 @@
 //! mappings, and applying lesson overrides.
 
 use serde::Deserialize;
-use std::fs;
+use std::fs::File;
+use std::io::{self, Read};
 use std::path::Path;
 use thiserror::Error;
+
+const MAX_CONFIG_BYTES: u64 = 1024 * 1024;
 
 /// Errors that can occur during configuration operations.
 #[derive(Error, Debug)]
@@ -17,11 +20,61 @@ pub enum ConfigError {
     /// TOML parsing error
     #[error("TOML parsing error: {0}")]
     Toml(#[from] toml::de::Error),
+    /// The config exceeds the maximum size in bytes.
+    #[error("Config exceeds the {limit}-byte size limit")]
+    TooLarge { limit: u64 },
+    /// A mapping color is not in a supported hex format.
+    #[error("Mapping {mapping}: {field} must be a hex color (#RGB, #RGBA, #RRGGBB or #RRGGBBAA)")]
+    InvalidColor { mapping: usize, field: &'static str },
+}
+
+fn is_hex_color(value: &str) -> bool {
+    value.strip_prefix('#').is_some_and(|digits| {
+        matches!(digits.len(), 3 | 4 | 6 | 8) && digits.bytes().all(|byte| byte.is_ascii_hexdigit())
+    })
 }
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn config_size_limit_is_inclusive_and_checked_before_parsing() {
+        let mut content = b"mappings = []\n#".to_vec();
+        content.resize(MAX_CONFIG_BYTES as usize, b' ');
+        assert!(Config::read(content.as_slice()).is_ok());
+
+        content.push(0xff);
+        assert!(matches!(
+            Config::read(content.as_slice()),
+            Err(ConfigError::TooLarge {
+                limit: MAX_CONFIG_BYTES
+            })
+        ));
+    }
+
+    #[test]
+    fn config_rejects_invalid_colors_in_both_fields() {
+        for field in ["bg_color", "fg_color"] {
+            let content = format!(
+                "[[mappings]]\nprefix = 'MA'\nmap_id = 'Maths'\nlabel = 'Maths'\n{} = '#AbC'\n{field} = 'not-a-hex-color'\n",
+                if field == "bg_color" { "fg_color" } else { "bg_color" }
+            );
+            assert!(matches!(
+                Config::read(content.as_bytes()),
+                Err(ConfigError::InvalidColor { mapping: 1, field: invalid }) if invalid == field
+            ));
+        }
+    }
+
+    #[test]
+    fn config_accepts_legacy_color_alias_and_default_foreground() {
+        let content =
+            "[[mappings]]\nprefix = 'MA'\nmap_id = 'Maths'\nlabel = 'Maths'\ncolor = '#AbC'\n";
+        let config = Config::read(content.as_bytes()).unwrap();
+        assert_eq!(config.mappings[0].bg_color, "#AbC");
+        assert_eq!(config.mappings[0].fg_color, "#231f20");
+    }
 
     #[test]
     fn test_get_style_for_room_longest_prefix() {
@@ -174,6 +227,7 @@ impl Config {
     /// - The file cannot be read
     /// - The TOML syntax is invalid
     /// - Required fields are missing
+    /// - The file exceeds 1 MiB or contains an invalid mapping color
     ///
     /// # Example
     ///
@@ -188,8 +242,33 @@ impl Config {
     /// # }
     /// ```
     pub fn load(path: &Path) -> Result<Self, ConfigError> {
-        let content = fs::read_to_string(path)?;
-        let config: Config = toml::from_str(&content)?;
+        Self::read(File::open(path)?)
+    }
+
+    fn read(reader: impl Read) -> Result<Self, ConfigError> {
+        let mut bytes = Vec::new();
+        reader.take(MAX_CONFIG_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_CONFIG_BYTES {
+            return Err(ConfigError::TooLarge {
+                limit: MAX_CONFIG_BYTES,
+            });
+        }
+        let content = std::str::from_utf8(&bytes)
+            .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
+        let config: Self = toml::from_str(content)?;
+        for (index, mapping) in config.mappings.iter().enumerate() {
+            for (field, color) in [
+                ("bg_color", &mapping.bg_color),
+                ("fg_color", &mapping.fg_color),
+            ] {
+                if !is_hex_color(color) {
+                    return Err(ConfigError::InvalidColor {
+                        mapping: index + 1,
+                        field,
+                    });
+                }
+            }
+        }
         Ok(config)
     }
 

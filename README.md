@@ -101,7 +101,7 @@ Create a `config.toml` file with room mappings and optional overrides.
 
 ### Room Mappings
 
-Maps room code prefixes to colors and map element IDs:
+Maps room code prefixes to colors and map element IDs. Config files may be at most 1 MiB, and colors must use `#RGB`, `#RGBA`, `#RRGGBB`, or `#RRGGBBAA`:
 
 ```toml
 [[mappings]]
